@@ -21,13 +21,6 @@ passport.use(new BasicStrategy(
   }
 ))
 
-app.get('/api/auth',
-  passport.authenticate('basic', {session: false}),
-  function (req, res) {
-    res.json({'hello': req.user})
-  }
-)
-
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended: false}))
 
@@ -36,7 +29,7 @@ app.use(function(req, res, next) {
   next()
 })
 
-app.use(routes)
+app.use('/api', routes)
 
 app.use(morgan('dev'))
 
