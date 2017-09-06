@@ -115,6 +115,14 @@ router.post('/api/activities/:id/stats', function(req, res) {
   })
 })
 
-
+router.delete('/api/stats/:id', function(req, res) {
+  models.Stat.destroy({ where: { id: req.params.id } })
+  .then(function(data) {
+    res.status(200).send(sendMessage('success', data))
+  })
+  .catch(function(err) {
+    res.status(304).send(sendMessage('fail', err))
+  })
+})
 
 module.exports = router
