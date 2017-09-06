@@ -12,19 +12,11 @@ const sendMessage = function(status, data) {
   return obj
 }
 
-// Verb	URL	Action
-// GET	/activities	Show a list of all activities I am tracking, and links to their individual pages
-// POST	/activities	Create a new activity for me to track.
-// GET	/activities/{id}	Show information about one activity I am tracking, and give me the data I have recorded for that activity.
-// PUT	/activities/{id}	Update one activity I am tracking, changing attributes such as name or type. Does not allow for changing tracked data.
-// DELETE	/activities/{id}	Delete one activity I am tracking. This should remove tracked data for that activity as well.
-// POST	/activities/{id}/stats	Add tracked data for a day. The data sent with this should include the day tracked. You can also override the data for a day already recorded.
-// DELETE	/stats/{id}	Remove tracked data for a day.
-
 router.get('/', passport.authenticate('basic', { session: false }), function(req, res) {
   res.send('Welcome to Stat Tracker!')
 })
 
+// GET	/activities	Show a list of all activities I am tracking, and links to their individual pages
 router.get('/api/activities', passport.authenticate('basic', { session: false }), function(req, res) {
   models.Activity.findAll()
   .then(function(data) {
@@ -35,6 +27,7 @@ router.get('/api/activities', passport.authenticate('basic', { session: false })
   })
 })
 
+// POST	/activities	Create a new activity for me to track.
 router.post('/api/activities', passport.authenticate('basic', { session: false }), function(req, res) {
 
   let newActivity = {
@@ -51,6 +44,7 @@ router.post('/api/activities', passport.authenticate('basic', { session: false }
   })
 })
 
+// GET	/activities/{id}	Show information about one activity I am tracking, and give me the data I have recorded for that activity.
 router.get('/api/activities/:id', passport.authenticate('basic', { session: false }), function(req, res) {
   models.Activity.findOne({
     where: { id: req.params.id },
@@ -67,6 +61,7 @@ router.get('/api/activities/:id', passport.authenticate('basic', { session: fals
   })
 })
 
+// PUT	/activities/{id}	Update one activity I am tracking, changing attributes such as name or type. Does not allow for changing tracked data.
 router.put('/api/activities/:id', passport.authenticate('basic', { session: false }), function(req, res) {
   models.Activity.update({
     name: req.body.name,
@@ -80,8 +75,7 @@ router.put('/api/activities/:id', passport.authenticate('basic', { session: fals
   })
 })
 
-// TEST THIS THINGAMAJIG LATER!!!!!!!!!
-
+// DELETE	/activities/{id}	Delete one activity I am tracking. This should remove tracked data for that activity as well.
 router.delete('/api/activities/:id', passport.authenticate('basic', { session: false }), function(req, res) {
   models.Stat.destroy({ where: { activityId: req.params.id } })
   .then(function(data) {
@@ -99,8 +93,6 @@ router.delete('/api/activities/:id', passport.authenticate('basic', { session: f
 })
 
 // POST	/activities/{id}/stats	Add tracked data for a day. The data sent with this should include the day tracked. You can also override the data for a day already recorded.
-// DELETE	/stats/{id}	Remove tracked data for a day.
-
 router.post('/api/activities/:id/stats', passport.authenticate('basic', { session: false }), function(req, res) {
   let newStat = {
     activityId: req.params.id,
@@ -115,6 +107,7 @@ router.post('/api/activities/:id/stats', passport.authenticate('basic', { sessio
   })
 })
 
+// DELETE	/stats/{id}	Remove tracked data for a day.
 router.delete('/api/stats/:id', passport.authenticate('basic', { session: false }), function(req, res) {
   models.Stat.destroy({ where: { id: req.params.id } })
   .then(function(data) {

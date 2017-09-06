@@ -31,6 +31,11 @@ app.get('/api/auth',
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended: false}))
 
+app.use(function(req, res, next) {
+  res.contentType('application/json')
+  next()
+})
+
 app.use(routes)
 
 app.use(morgan('dev'))
