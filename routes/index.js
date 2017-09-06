@@ -25,7 +25,7 @@ router.get('/', passport.authenticate('basic', {session: false}), function(req, 
   res.send('Welcome to Stat Tracker!')
 })
 
-router.get('/api/activities', function(req, res) {
+router.get('/api/activities', passport.authenticate('basic', {session: false}), function(req, res) {
   models.Activity.findAll()
   .then(function(data) {
     res.status(200).send(sendMessage('success', data))
@@ -35,7 +35,7 @@ router.get('/api/activities', function(req, res) {
   })
 })
 
-router.post('/api/activities', function(req, res) {
+router.post('/api/activities', passport.authenticate('basic', {session: false}), function(req, res) {
 
   let newActivity = {
     name: req.body.name,
@@ -51,7 +51,7 @@ router.post('/api/activities', function(req, res) {
   })
 })
 
-router.get('/api/activities/:id', function(req, res) {
+router.get('/api/activities/:id', passport.authenticate('basic', {session: false}), function(req, res) {
   models.Activity.findOne({
     where: { id: req.params.id },
     include: [{
@@ -67,7 +67,7 @@ router.get('/api/activities/:id', function(req, res) {
   })
 })
 
-router.put('/api/activities/:id', function(req, res) {
+router.put('/api/activities/:id', passport.authenticate('basic', {session: false}), function(req, res) {
   models.Activity.update({
     name: req.body.name,
     unit: req.body.unit
@@ -82,7 +82,7 @@ router.put('/api/activities/:id', function(req, res) {
 
 // TEST THIS THINGAMAJIG LATER!!!!!!!!!
 
-router.delete('/api/activities/:id', function(req, res) {
+router.delete('/api/activities/:id', passport.authenticate('basic', {session: false}), function(req, res) {
   models.Stat.destroy({ where: { activityId: req.params.id } })
   .then(function(data) {
     models.Activity.destroy({ where: { id: req.params.id } })
@@ -101,7 +101,7 @@ router.delete('/api/activities/:id', function(req, res) {
 // POST	/activities/{id}/stats	Add tracked data for a day. The data sent with this should include the day tracked. You can also override the data for a day already recorded.
 // DELETE	/stats/{id}	Remove tracked data for a day.
 
-router.post('/api/activities/:id/stats', function(req, res) {
+router.post('/api/activities/:id/stats', passport.authenticate('basic', {session: false}), function(req, res) {
   let newStat = {
     activityId: req.params.id,
     measurement: req.body.measurement
@@ -115,7 +115,7 @@ router.post('/api/activities/:id/stats', function(req, res) {
   })
 })
 
-router.delete('/api/stats/:id', function(req, res) {
+router.delete('/api/stats/:id', passport.authenticate('basic', {session: false}), function(req, res) {
   models.Stat.destroy({ where: { id: req.params.id } })
   .then(function(data) {
     res.status(200).send(sendMessage('success', data))
