@@ -24,7 +24,7 @@ passport.use(new BasicStrategy(
 app.get('/api/auth',
   passport.authenticate('basic', {session: false}),
   function (req, res) {
-    res.json({"hello": req.user})
+    res.json({'hello': req.user})
   }
 )
 
