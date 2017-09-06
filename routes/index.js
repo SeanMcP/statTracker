@@ -1,8 +1,10 @@
 const express = require('express')
 const passport = require('passport')
 const BasicStrategy = require('passport-http').BasicStrategy
-const router = express.Router()
+const apiRouter = express.Router()
 const models = require('../models/index')
+
+const router = express()
 
 const sendMessage = function(status, data) {
   let obj = {
@@ -12,12 +14,12 @@ const sendMessage = function(status, data) {
   return obj
 }
 
-router.get('/', passport.authenticate('basic', { session: false }), function(req, res) {
+apiRouter.get('/', passport.authenticate('basic', { session: false }), function(req, res) {
   res.send('Welcome to Stat Tracker!')
 })
 
 // GET	/activities	Show a list of all activities I am tracking, and links to their individual pages
-router.get('/api/activities', passport.authenticate('basic', { session: false }), function(req, res) {
+apiRouter.get('/activities', passport.authenticate('basic', { session: false }), function(req, res) {
   models.Activity.findAll()
   .then(function(data) {
     res.status(200).send(sendMessage('success', data))
@@ -28,7 +30,7 @@ router.get('/api/activities', passport.authenticate('basic', { session: false })
 })
 
 // POST	/activities	Create a new activity for me to track.
-router.post('/api/activities', passport.authenticate('basic', { session: false }), function(req, res) {
+apiRouter.post('/activities', passport.authenticate('basic', { session: false }), function(req, res) {
 
   let newActivity = {
     name: req.body.name,
@@ -45,7 +47,7 @@ router.post('/api/activities', passport.authenticate('basic', { session: false }
 })
 
 // GET	/activities/{id}	Show information about one activity I am tracking, and give me the data I have recorded for that activity.
-router.get('/api/activities/:id', passport.authenticate('basic', { session: false }), function(req, res) {
+apiRouter.get('/activities/:id', passport.authenticate('basic', { session: false }), function(req, res) {
   models.Activity.findOne({
     where: { id: req.params.id },
     include: [{
@@ -62,7 +64,7 @@ router.get('/api/activities/:id', passport.authenticate('basic', { session: fals
 })
 
 // PUT	/activities/{id}	Update one activity I am tracking, changing attributes such as name or type. Does not allow for changing tracked data.
-router.put('/api/activities/:id', passport.authenticate('basic', { session: false }), function(req, res) {
+apiRouter.put('/activities/:id', passport.authenticate('basic', { session: false }), function(req, res) {
   models.Activity.update({
     name: req.body.name,
     unit: req.body.unit
@@ -76,7 +78,7 @@ router.put('/api/activities/:id', passport.authenticate('basic', { session: fals
 })
 
 // DELETE	/activities/{id}	Delete one activity I am tracking. This should remove tracked data for that activity as well.
-router.delete('/api/activities/:id', passport.authenticate('basic', { session: false }), function(req, res) {
+apiRouter.delete('/activities/:id', passport.authenticate('basic', { session: false }), function(req, res) {
   models.Stat.destroy({ where: { activityId: req.params.id } })
   .then(function(data) {
     models.Activity.destroy({ where: { id: req.params.id } })
@@ -93,7 +95,7 @@ router.delete('/api/activities/:id', passport.authenticate('basic', { session: f
 })
 
 // POST	/activities/{id}/stats	Add tracked data for a day. The data sent with this should include the day tracked. You can also override the data for a day already recorded.
-router.post('/api/activities/:id/stats', passport.authenticate('basic', { session: false }), function(req, res) {
+apiRouter.post('/activities/:id/stats', passport.authenticate('basic', { session: false }), function(req, res) {
   let newStat = {
     activityId: req.params.id,
     measurement: req.body.measurement
@@ -108,7 +110,7 @@ router.post('/api/activities/:id/stats', passport.authenticate('basic', { sessio
 })
 
 // DELETE	/stats/{id}	Remove tracked data for a day.
-router.delete('/api/stats/:id', passport.authenticate('basic', { session: false }), function(req, res) {
+apiRouter.delete('/stats/:id', passport.authenticate('basic', { session: false }), function(req, res) {
   models.Stat.destroy({ where: { id: req.params.id } })
   .then(function(data) {
     res.status(200).send(sendMessage('success', data))
@@ -117,5 +119,12 @@ router.delete('/api/stats/:id', passport.authenticate('basic', { session: false 
     res.status(304).send(sendMessage('fail', err))
   })
 })
+
+apiRouter.get('/test', function(req, res) {
+  let obj = { message: 'This should appear when you go to /api/test' }
+  res.send(obj)
+})
+
+router.use('/api', apiRouter)
 
 module.exports = router
