@@ -1,13 +1,16 @@
-'use strict';
+'use strict'
 module.exports = function(sequelize, DataTypes) {
   var Stat = sequelize.define('Stat', {
+    activityId: DataTypes.INTEGER,
     measurement: DataTypes.INTEGER
-  }, {
-    classMethods: {
-      associate: function(models) {
-        // associations can be defined here
-      }
-    }
-  });
-  return Stat;
-};
+  }, {})
+
+  Stat.associate = function(models) {
+    Stat.belongsTo(models.Activity, {
+      as: 'stat',
+      foreignKey: 'activityId'
+    })
+  }
+
+  return Stat
+}

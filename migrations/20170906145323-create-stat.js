@@ -8,8 +8,17 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
+      activityId: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'Activities',
+          key: 'id'
+        }
+      },
       measurement: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+        allowNull: false
       },
       createdAt: {
         allowNull: false,
